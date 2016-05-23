@@ -1,2 +1,7 @@
-/etopo2.nc
-/frames/
+/db.sqlite3
+.project
+.pydevproject
+org.eclipse.core.resources.prefs
+*.pyc
+frames/
+*.nc
