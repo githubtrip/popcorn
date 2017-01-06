@@ -17,12 +17,13 @@ contains "THEEND"
 
 import Queue
 import argparse
-import cv
+import cv2
 import os
 import pyinotify
 import threading
 import time
 
+video = None
 
 parser = argparse.ArgumentParser(description="PopCorn.py - Wait pictures in a \
                                  directory, appends it to a video file.")
@@ -46,31 +47,29 @@ def create_video():
     engendre par pyinotify se declenche a la creation du fichier et non lorsque
     celui ci est termine.
     """
+    global video
+
     record = True
     while record:
         if q.qsize() > 1:
             framefile = str(q.get())
-            #print("addFrame "+framefile)
-            cap = cv.CaptureFromFile(framefile)
-            cv.GrabFrame(cap)
-            frame = cv.RetrieveFrame(cap)
+            print("addFrame "+framefile)
+            img = cv2.imread(framefile)
 
             try:
                 """ ecrtiure de la frame sur la video """
-                cv.WriteFrame(writer, frame)
+                video.write(img)
             except:
                 """ impossible d'ecrire la frame dans la video > la video n'est
                 pas cree > creation de la video """
-                prop = cv.CV_CAP_PROP_FRAME_WIDTH
-                width = int(cv.GetCaptureProperty(cap, prop))
-                prop = cv.CV_CAP_PROP_FRAME_HEIGHT
-                height = int(cv.GetCaptureProperty(cap, prop))
-                fourcc = cv.CV_FOURCC('D', 'I', 'V', 'X')
-                writer = cv.CreateVideoWriter(args.videofile,
-                                              fourcc,
-                                              float(args.fps),
-                                              (width, height),
-                                              1)
+                height , width , layers =  img.shape
+                print(height , width , layers)
+                fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+                video = cv2.VideoWriter(args.videofile,
+                                        fourcc,
+                                        float(args.fps),
+                                        (width,height))
+                video.write(img)
             if args.erase:
                 """ si l'args -x est OK, on efface les fichiers de donnees
                 apres integration
@@ -96,6 +95,9 @@ class PTmp(pyinotify.ProcessEvent):
                 time.sleep(1)
             #Sometime createVideo take long time to write end-1 frame
             time.sleep(5)
+
+            video.release()
+
             print(q.qsize())
             print('The end, get pop-corns...')
             raise Exception('THEEND')

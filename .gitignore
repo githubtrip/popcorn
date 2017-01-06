@@ -5,3 +5,4 @@ org.eclipse.core.resources.prefs
 *.pyc
 frames/
 *.nc
+*.avi

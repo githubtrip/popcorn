@@ -19,7 +19,9 @@
 #
 # Ce fichier gere la lecture de fichier de bathymetrie
 
-from Scientific.IO.NetCDF import *
+#from Scientific.IO.NetCDF import *
+
+import netCDF4
 
 class etopo2(object):
     """Class pour la creation d'un objet bathymetrique avec les donnees ETOPO2 V2G"""
@@ -28,11 +30,13 @@ class etopo2(object):
         """Method docstring."""
         # Ouverture du fichier en read-only
         self.file = filename
-        self.nc = NetCDFFile(filename,'r')
+        self.nc = netCDF4.Dataset(filename, 'r')
+        #import pdb; pdb.set_trace()
+        #self.nc = NetCDFFile(filename,'r')
         # Recuperation des valeurs x>long y>lat et z>level dans des tableaux
-        longitude = self.nc.variables['x']
-        latitude = self.nc.variables['y']
-        level = self.nc.variables['z']
+        longitude = self.nc.variables['x'].__array__()
+        latitude = self.nc.variables['y'].__array__()
+        level = self.nc.variables['z'].__array__()
         self.longitudeVar = longitude[:]
         self.latitudeVar = latitude[:]
         self.levelVar = level[:]
@@ -47,7 +51,7 @@ class etopo2(object):
         print("etopo2 - Def en latitude (par deg)", self.defLatitude)
         print("etopo2 - Def en longitude", self.defLongitude)
 
-        
+
     def getLevel(self, lat, long):
         """Recupere le level selon latitude et longitude"""
         # Verification parametres
@@ -60,20 +64,20 @@ class etopo2(object):
         indicelong = int ( (long + 180) * self.defLongitude )
         # Puis lire le level correspondant aux indices 
         return self.levelVar[indicelat,indicelong]
- 
+
 class fake(object):
     """Class pour la creation d'un objet bathymetrique de test"""
 
     def __init__(self):
         """Method docstring."""
         print("!!! Warning Using fake bathymetrics data")
-               
+
     def getLevel(self, lat, long):
         if -5 < lat < 5 and -5 < long < 5:
             return 16000
         else:
             return 0
-        
+
 #Test du script
 if __name__ == '__main__':
     print("Test Module Bathy")

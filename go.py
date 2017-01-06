@@ -5,7 +5,7 @@
 import bathy
 import numpy
 import matplotlib.pyplot as plt
-import Image
+from PIL import Image
 
 bathy = bathy.etopo2('etopo2.nc')
 
@@ -22,19 +22,15 @@ for i in range(0,height):
         for j in range(0,width):
             tab[i,j]=bathy.getLevel(long+j/30.0,lat+i/30.0)
 
-#import pdb; pdb.set_trace()
-
 for framenum in range(nbframe):
     plt.imshow(tab)
     plt.savefig('frames/frame'+str(framenum)+'.png')
-    
-    #import pdb; pdb.set_trace()
-    
+
     long = long + (1./30)
     lat = lat
     tab = numpy.roll(tab, 1, axis=1)
-    
+
     for i in range(0,height):
-            tab[i,0]=bathy.getLevel(long,lat+i/30.0)
-            
+            tab[i,0] = bathy.getLevel(long, lat+i/30.0)
+
 plt.savefig('frames/THEEND.png')
