@@ -15,7 +15,11 @@ To finish video "recording", press crtl+c or send a file with filename
 contains "THEEND"
 """
 
-import Queue
+try:
+   import queue
+except ImportError:
+   import Queue as queue
+
 import argparse
 import cv2
 import os
@@ -109,7 +113,7 @@ wm = pyinotify.WatchManager()
 notifier = pyinotify.Notifier(wm, PTmp())
 wdd = wm.add_watch(args.frames, mask, rec=True)
 
-q = Queue.Queue()
+q = queue.Queue()
 
 # Creation du thread d' ajout de frames dans la video
 t = threading.Thread(target=create_video)

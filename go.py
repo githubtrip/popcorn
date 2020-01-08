@@ -26,9 +26,9 @@ for framenum in range(nbframe):
     plt.imshow(tab)
     plt.savefig('frames/frame'+str(framenum)+'.png')
 
-    long = long + (1./30)
+    long = long + 30
     lat = lat
-    tab = numpy.roll(tab, 1, axis=1)
+    tab = numpy.roll(tab, -5, axis=1)
 
     for i in range(0,height):
             tab[i,0] = bathy.getLevel(long, lat+i/30.0)
